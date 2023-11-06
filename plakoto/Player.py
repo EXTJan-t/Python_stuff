@@ -1,6 +1,4 @@
 class Player():
-    #tag implies the order of play of the player, 1 for player 1 and 2 for player 2
-    tag = 1
     def __init__(self, strategy):
         self.stategy = strategy
 
