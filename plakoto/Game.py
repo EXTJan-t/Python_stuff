@@ -12,14 +12,7 @@ class Game():
         self.players = [player1, player2]
         self.dice1 = dice1
         self.dice2 = dice2 
-        self.table = [
-            ["", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23","24",""],
-            [""] + [self.format_str(self.point_state[i][0]) for i in range(12, 24)] + [""],
-            [""] + [self.format_str(self.point_state[i][1]) for i in range(12, 24)] + [""],
-            [""] + [self.format_str(self.point_state[i][1]) for i in range(0, 12)][::-1] + [""],
-            [""] + [self.format_str(self.point_state[i][0]) for i in range(0, 12)][::-1] + [""],
-            ["", "12", "11", "10", " 9" , " 8", " 7", " 6", " 5", " 4", " 3", " 2"," 1",""]
-        ]
+        self.update_table()
 
     
     def print_board(self):
@@ -33,17 +26,21 @@ class Game():
             os.system('clear')
         if os.name == 'nt':  #for windows
             os.system('cls')
-
+        print()
+        print()
+        print()
         table = self.table
         print(" | ".join(table[0]))
-        print("-" * 64)
+        print("-" * 80)
         print(" | ".join(table[1]))
         print(" | ".join(table[2]))
-        print("-" * 64)
+        print("-" * 80)
         print(" | ".join(table[3]))
         print(" | ".join(table[4]))
-        print("-" * 64)
+        print("-" * 80)
         print(" | ".join(table[5]))
+        print()
+        print()
         return
     
     def play_a_round(self):
@@ -70,11 +67,13 @@ class Game():
 
         starts the game
         """
+        #two players roll to decide their order
         d1, d2 = self.dice1(), self.dice2()
         while d1 == d2:
             d1, d2 = self.dice1(), self.dice2()
         if d1  < d2:
             reversed(self.players)
+
         while not self.check_game_end:
             self.play_a_round()
     
@@ -90,31 +89,34 @@ class Game():
         """
         return 0 in self.p_cnt
     
-    def move(self, p, a, step, dice_roll):
+    def move(self, p, act_seq, dice_roll):
         """
-        int x int x int
+        int x list<list<int, list<int>>> x int
 
-        player p moves a piece on point a, (step) steps
+        we move the pieces following the sequences of actions provided by the players
+        an act seq is as follows: [(starting_point1, roll1),(starting_point2, roll2)]
         """
         cur = self.p_state[p - 1]
-        a = a - 1
-        b = a + step
-        assert 0 <= a <= 23 and cur[a] > 0, "There's no pieces at point " + str(a + 1)
-        assert 0 <= b <= 23 and sum(self.point_state[b]) <= 1 or \
-            self.point_state[b][1] > 0 and p == 1 or \
-            self.point_state[b][1] < 0 and p == 2
-        if  0  <= b <= 23 and self.table[b] == 0 or self.table[b] == p:
-            cur[b] += 1 
-            cur[a] -= 1
-            dice_roll.pop()
-        elif p in self.check_can_bear_off():
-            if b == 23:
-                cur[b] -= 1
-                self.p1_cnt -= 1
-                dice_roll.pop()
-            elif b > 23:
-                x
-            return
+        dir = 1 if p == 1 else -1
+        for act in act_seq:
+            start, roll = act
+            start -= 1
+            end = start + dir * roll
+            if not (0 <= start <= 23 and cur[start] > 0):
+                print("ILLEGAL MOVE")
+                print("There's no piece on point " + str(start + 1))
+                return
+            
+            if 0 <= end <= 23:
+                if can place on end:
+                    pass 
+                else:
+                    pass
+            else:
+                if can bear off:
+                    pass
+                else:
+                    pass
         
     def roll(self):
         """
@@ -127,6 +129,9 @@ class Game():
         result = [a, b]
         if a == b:
             result *= 2
+        
+        print("You have rolled " + result)
+
         return result
     
     def check_can_bear_off(self):
@@ -143,6 +148,15 @@ class Game():
         
         return ans
 
+    def update_table(self):
+        self.table = [
+            ["", " 13", " 14", " 15", " 16" , " 17", " 18", " 19", " 20", " 21", " 22", " 23"," 24",""],
+            [""] + [self.format_str(self.point_state[i][0]) for i in range(12, 24)] + [""],
+            [""] + [self.format_str(self.point_state[i][1]) for i in range(12, 24)] + ["|",self.format_str(15 - self.p_cnt[0])],
+            [""] + [self.format_str(self.point_state[i][1]) for i in range(0, 12)][::-1] + ["|",self.format_str(15 - self.p_cnt[0])],
+            [""] + [self.format_str(self.point_state[i][0]) for i in range(0, 12)][::-1] + [""],
+            ["", " 12", " 11", " 10", "  9" , "  8", "  7", "  6", "  5", "  4", "  3", "  2","  1",""]
+        ]
 
 
     def format_str(self, num):
@@ -151,7 +165,10 @@ class Game():
 
         outputs numbers in a format of "xx"
         """
-        if num >= 10:
-            return str(num)
+        t = str(num)
+        if len(t) == 3:
+            return t
+        elif len(t) == 2:
+            return " " + t
         else:
-            return " " + str(num)
+            return "  " + t
