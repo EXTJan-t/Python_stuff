@@ -1,7 +1,7 @@
 class Player():
     def __init__(self, strategy):
         self.stategy = strategy
-
+        
     def play(self, dice_roll, state):
         """
         list<int> x list<list<int>> -> tuple
