@@ -4,5 +4,5 @@ def strategy1(dice_roll, state):
 
     decides the action to take according to dice_rolls and state
     """
-    act = map(int, input("You have", dice_roll,"What are you gonna do?"))
-    return tuple(act)
+    a, b = map(int, input("You have " + str(dice_roll) + ". What are you gonna do?(format:start step)\n").split())
+    return (a, b),
