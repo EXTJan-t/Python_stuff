@@ -3,7 +3,8 @@ from time import sleep
 import helpers
 class Game():
     clear_board = True
-    stop_inbetween = True
+    stop_inbetween = False
+    table_rotate = False
     round = 0
     #shown_board = [[-15, 0]] + [[0, 0] for i in range(22)] + [[15, 0]]#in player 1's perspective
     players = []
@@ -30,8 +31,6 @@ class Game():
         self.dice1 = dice1
         self.dice2 = dice2 
         self.dice_roll = [1, 2]
-        self.update_table()
-        self.print_board()
    
     
     def play_a_round(self):
@@ -44,17 +43,34 @@ class Game():
         self.turn = 1
         self.roll()
         while self.dice_roll and self.p_cnt[0] != 0 and self.winner() == -1:
+            print("DEBUG:")
+            print(helpers.possible_moves(self.dice_roll, self.p1_state))
+            print(self.point_state)
             if not helpers.possible_moves(self.dice_roll, self.p1_state):
+                print("DEBUG:", self.dice_roll)
+                print(self.p1_state)
                 print("No possible moves, passed")
+                #for i in range(1000):
+                if self.stop_inbetween:
+                        input("press a key to continue")
                 break
             self.move(self.players[0].play(self.dice_roll, self.p1_state))
+
         #player 2 takes his turn
         self.turn = 2
         self.update_table()
         self.roll()
         while self.dice_roll and self.p_cnt[1] != 0 and self.winner() == -1:
+            print("DEBUG:")
+            print(helpers.possible_moves(self.dice_roll, self.p2_state))
+            print(self.point_state)
             if not helpers.possible_moves(self.dice_roll, self.p2_state):
+                print("DEBUG:",self.dice_roll)
+                print(self.p2_state)
                 print("No possible moves, passed")
+                #for i in range(1000):
+                if self.stop_inbetween:
+                        input("press a key to continue")
                 break
             self.move(self.players[1].play(self.dice_roll, self.p2_state))
     
@@ -72,11 +88,14 @@ class Game():
             d1, d2 = self.dice1(), self.dice2()
         if d1  < d2:
             self.players.reverse()
-            self.p1_pieces, self.p2_pieces = self.p2_pieces, self.p1_pieces
-
+        
+        self.update_table()
         print(self.players[0].name,"has rolled", max(d1, d2),", so he will be player1")
         print(self.players[1].name,"has rolled", min(d1, d2),", so he will be player2")
+        self.players[0].name = "player 1: " + self.players[0].name
+        self.players[1].name = "player 2: " + self.players[1].name
         #just to simply let players see the line above
+        
         sleep(1.5)
         while self.winner() == -1:
             self.play_a_round()
@@ -97,15 +116,23 @@ class Game():
         """
         if self.p_cnt[0] == 0:
             print(self.players[0].name,"achieved winning condition 1")
+            print("DEBUG:")
+            print(self.p1_state)
             return 0
         if self.p_cnt[1] == 0:
             print(self.players[1].name,"achieved winning condition 1")
+            print("DEBUG:")
+            print(self.p2_state)
             return 1
         if self.p2_pieces[0] == 1 and self.point_state[0] == 0:
             print(self.players[0].name,"achieved winning condition 2")
+            print("DEBUG:")
+            print(self.p1_state)
             return 0
-        if self.p1_pieces[23] == 1 and self.point_state[0] == 1:
+        if self.p1_pieces[23] == 1 and self.point_state[23] == 1:
             print(self.players[1].name,"achieved winning condition 2")
+            print("DEBUG:")
+            print(self.p2_state)
             return 1
         return -1
     
@@ -128,7 +155,7 @@ class Game():
             if self.turn == 2:
                 start = 23 - start
             end = start + dir * roll
-            print("DEBUG:",self.players[index].name, "has chose to move",start, end)
+            print("DEBUG:",self.players[index].name, "has chose to move",start + 1, end + 1)
             if not (0 <= start <= 23 and self.point_state[start] == index):
                 print("ILLEGAL MOVE", start + 1, end + 1)
                 print("There's no piece on point",start + 1)
@@ -173,9 +200,10 @@ class Game():
                 #if pieces can go home
                 home = -1 if index == 1 else 24
                 if self.check_can_bear_off(self.turn):
-                    if end == home and self.players[1 - index][home] <= 1:
+                    if end == home or self.players[1 - index][home] < 1:
                         self.p_cnt[index] -= 1
                         self.dice_roll.remove(roll)
+                        self.p_pieces[index][start] -= 1
                         if self.p_pieces[index][start] == 0:
                             self.point_state[start] = -1
 
@@ -224,11 +252,13 @@ class Game():
         self.shown_board = []
         for i in range(24):
             a, b, s = self.p1_pieces[i], -self.p2_pieces[i], self.point_state[i]
+            #print("DEBUG:",a, b)
             if b == 0:
                 self.shown_board.append([a, b])
             else:
                 self.shown_board.append([b, a])
-        if self.turn == 1:
+        #print("DEBUG:",self.shown_board)
+        if self.turn == 1 or not self.table_rotate:
             self.table = [
                 ["", " 13", " 14", " 15", " 16" , " 17", " 18", " 19", " 20", " 21", " 22", " 23"," 24",""],
                 [""] + [format_str(self.shown_board[i][0]) for i in range(12, 24)] + [""],
