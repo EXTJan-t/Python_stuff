@@ -1,4 +1,5 @@
 import os
+from time import sleep
 class Game():
     round = 0
     #shown_board = [[-15, 0]] + [[0, 0] for i in range(22)] + [[15, 0]]#in player 1's perspective
@@ -67,7 +68,7 @@ class Game():
         print(self.players[0].name,"has rolled", max(d1, d2),", so he will be player1")
         print(self.players[1].name,"has rolled", min(d1, d2),", so he will be player2")
         #just to simply let players see the line above
-        input("")
+        sleep(1.5)
         while self.winner() == -1:
             self.play_a_round()
             self.round += 1

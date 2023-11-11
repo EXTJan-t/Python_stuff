@@ -4,5 +4,9 @@ def strategy1(dice_roll, state):
 
     decides the action to take according to dice_rolls and state
     """
-    a, b = map(int, input("You have " + str(dice_roll) + ". What are you gonna do?(format:start step)\n").split())
-    return (a, b),
+    t = list(map(int, input("You have " + str(dice_roll) + ". What are you gonna do?(format:start1 step1 start2 step2)\n").split()))
+    while len(t) % 2 != 0:
+        print("Invalid input")
+        t = list(map(int, input("You have " + str(dice_roll) + ". What are you gonna do?(format:start1 step1 start2 step2)\n").split()))
+    act_seq = [(t[i], t[i + 1])for i in range(0, len(t), 2)]
+    return act_seq
