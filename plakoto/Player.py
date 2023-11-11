@@ -25,8 +25,12 @@ class Human_player(Player):
             t = "second"
         self.name = input("What would the " + t +" player like to be called?\n")
 
-class Naive_computer_player():
+class Naive_computer_player(Player):
     strategy = startegies.strategy_random
     def __init__(self, temp):
         super().__init__(Naive_computer_player.strategy)
         self.name = temp
+
+    def play(self, dice_roll, state):
+        choice =  super().play(dice_roll, state)
+        return choice

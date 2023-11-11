@@ -15,4 +15,8 @@ def strategy_input(dice_roll, state):
 
 
 def strategy_random(dice_roll, state):
-    return random.choice(helpers.possible_moves(dice_roll, state))
+    possible_moves = helpers.possible_moves(dice_roll, state)
+    if not possible_moves:
+        print("DEBUG:",dice_roll)
+        print(state)
+    return random.choice(possible_moves),
