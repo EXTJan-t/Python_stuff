@@ -1,3 +1,4 @@
+import startegies
 class Player():
     def __init__(self, strategy):
         self.stategy = strategy
@@ -15,10 +16,17 @@ class Player():
 
 
 class Human_player(Player):
-    def __init__(self, strategy, temp):
-        super().__init__(strategy)
+    strategy = startegies.strategy_input
+    def __init__(self, temp):
+        super().__init__(Human_player.strategy)
         if temp == 1:
             t = "first"
         elif temp == 2:
             t = "second"
         self.name = input("What would the " + t +" player like to be called?\n")
+
+class Naive_computer_player():
+    strategy = startegies.strategy_random
+    def __init__(self, temp):
+        super().__init__(Naive_computer_player.strategy)
+        self.name = temp

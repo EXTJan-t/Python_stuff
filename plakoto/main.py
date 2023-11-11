@@ -1,10 +1,10 @@
 from random import choice
 from Game import Game
 from Player import Human_player
-from startegies import strategy1
 
-player1 = Human_player(strategy1, 1)
-player2 = Human_player(strategy1, 2)
+
+player1 = Human_player(1)
+player2 = Human_player(2)
 test_dice1 = lambda : 1
 test_dice2 = lambda : 2
 standard_dice = lambda : choice(range(1, 7))

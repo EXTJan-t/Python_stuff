@@ -150,8 +150,9 @@ class Game():
                     print(self.p_pieces[index])
             else:
                 #if pieces can go home
+                home = -1 if index == 1 else 24
                 if self.check_can_bear_off(self.turn):
-                    if end == 24:
+                    if end == home:
                         self.p_cnt[index] -= 1
                         self.dice_roll.remove(roll)
                         if self.p_pieces[index][start] == 0:
@@ -161,7 +162,7 @@ class Game():
                         self.update_table()
 
                     else:
-                        if self.p_pieces[index][23 - roll] != 0:
+                        if self.p_pieces[index][home - dir * roll] != 0:
                             print("ILLEGAL MOVE", start + 1, end + 1)
                             print("You should first move pieces that can exactly go home")
                 else:
@@ -189,7 +190,7 @@ class Game():
 
         returns if a player can bear off
         """
-        return sum(self.p_pieces[p - 1][0: 12]) == 0
+        return sum(self.p_pieces[p - 1][12: 24]) == 0
     
 
     def update_table(self):
