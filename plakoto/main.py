@@ -15,16 +15,16 @@ standard_dice = lambda : choice(range(1, 7))
 #game1.game()
 #test_game = Game(player1, player2, test_dice1, test_dice2)
 #test_game.game()
-test_times = 1000
+test_times = 10000
 winners = [0, 0]
 start_time = time.time()
-cnt = 0
 for i in range(test_times):
-    cnt += 1
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print("elpased_time", elapsed_time)
-    print("currently on game",cnt)
+    if (i + 1) % 100 == 0:
+        os.system('cls')
+        print("elpased_time", elapsed_time)
+        print("currently on game",i + 1)
 
     computer1 = Naive_computer_player("random1")
     computer2 = Naive_computer_player("random2")
@@ -32,7 +32,7 @@ for i in range(test_times):
     game1.game()
 
     winners[game1.winner()] += 1
-    os.system('cls')
+    
 end_time = time.time()
 elapsed_time = end_time - start_time
 print("test time:", elapsed_time)

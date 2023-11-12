@@ -110,8 +110,9 @@ class Game():
             self.play_a_round()
             self.round += 1
         self.update_table()
-        print(self.winner())
-        print("game ended, winner is", self.players[self.winner()].name)
+        if self.show_interface:
+            print(self.winner())
+            print("game ended, winner is", self.players[self.winner()].name)
 
 
 
@@ -124,25 +125,29 @@ class Game():
         -1 for not yet, 0 for player 1 wins the game, 1 for player 2 wins the game
         """
         if self.p_cnt[0] == 0:
-            print(self.players[0].name,"achieved winning condition 1")
+            if self.show_interface:
+                print(self.players[0].name,"achieved winning condition 1")
             if self.show_DEBUG:
                 print("DEBUG:")
                 print(self.p1_state)
             return 0
         if self.p_cnt[1] == 0:
-            print(self.players[1].name,"achieved winning condition 1")
+            if self.show_interface:
+                print(self.players[1].name,"achieved winning condition 1")
             if self.show_DEBUG:
                 print("DEBUG:")
                 print(self.p2_state)
             return 1
         if self.p2_pieces[0] == 1 and self.point_state[0] == 0:
-            print(self.players[0].name,"achieved winning condition 2")
+            if self.show_interface:
+                print(self.players[0].name,"achieved winning condition 2")
             if self.show_DEBUG:
                 print("DEBUG:")
                 print(self.p1_state)
             return 0
         if self.p1_pieces[23] == 1 and self.point_state[23] == 1:
-            print(self.players[1].name,"achieved winning condition 2")
+            if self.show_interface:
+                print(self.players[1].name,"achieved winning condition 2")
             if self.show_DEBUG:
                 print("DEBUG:")
                 print(self.p2_state)
