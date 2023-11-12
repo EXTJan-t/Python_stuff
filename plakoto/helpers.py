@@ -22,7 +22,7 @@ def check_can_bear_off(self_pieces:list):
 
     returns if a player can bear off
     """
-    return sum(self_pieces[12: 24]) == 0
+    return sum(self_pieces[6: 24]) == 0
 
 def can_move(state:list,start:int, roll:int):
     end = start - roll
@@ -32,7 +32,7 @@ def can_move(state:list,start:int, roll:int):
             return True
     elif end < 0:
         if check_can_bear_off(self_pieces):
-            if end == -1 or self_pieces[roll - 1] == 0:
+            if end == -1:
                  return True
             
                 
