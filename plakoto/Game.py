@@ -103,6 +103,8 @@ class Game():
             print(self.players[1].name,"has rolled", min(d1, d2),", so he will be player2")
         self.players[0].name = "player 1: " + self.players[0].name
         self.players[1].name = "player 2: " + self.players[1].name
+        self.players[0].turn = 1
+        self.players[0].turn = 2
         #just to simply let players see the line above
         if self.stop_inbetween:
             sleep(1.5)
@@ -180,14 +182,14 @@ class Game():
                 if self.show_interface:
                     print("ILLEGAL MOVE", start + 1, end + 1)
                     print("There's no piece on point",start + 1)
-                return
+                    return
             
             if 0 <= end <= 23:
                 #if can place on end:
                 if self.point_state[end] == index or self.point_state[end] == -1:
                     self.update_board(index, start, end, roll)
 
-                elif self.p_pieces[1 - index][end] == 1: # we pin the opponent
+                elif self.p_pieces[1 - index][end] == 1 and self.p1_pieces[end] + self.p2_pieces[end] == 1: # we pin the opponent
                     self.update_board(index, start, end, roll)
 
                 else:
@@ -229,18 +231,19 @@ class Game():
         """
         if 0 <= end <= 23:
             self.p_pieces[index][end] += 1
+            self.point_state[end] = index
         self.p_pieces[index][start] -= 1
         self.dice_roll.remove(roll)
-        if 0 <= end <= 23:
-            self.point_state[end] = index
-        if self.stop_inbetween:
-            input()
         if self.p_pieces[index][start] == 0:
             if self.p_pieces[1 - index][start] == 0:
                 self.point_state[start] = -1
             else:
                 self.point_state[start] = 1 - index
+
+        if self.stop_inbetween:
+            input("press any key to continue")
         self.update_table()
+
 
 
     def roll(self):
@@ -278,7 +281,7 @@ class Game():
         for i in range(24):
             a, b, s = self.p1_pieces[i], -self.p2_pieces[i], self.point_state[i]
             #print("DEBUG:",a, b)
-            if b == 0:
+            if b == 0 or s == 1 and a != 0:
                 self.shown_board.append([a, b])
             else:
                 self.shown_board.append([b, a])

@@ -3,6 +3,7 @@ class Player():
     def __init__(self, strategy):
         self.stategy = strategy
         self.name = ""
+        self.turn = 1
 
 
     def play(self, dice_roll, state):
@@ -24,6 +25,9 @@ class Human_player(Player):
         elif temp == 2:
             t = "second"
         self.name = input("What would the " + t +" player like to be called?\n")
+    def play(self, dice_roll, state):
+        move = super().play(dice_roll, state)
+        return move if self.turn == 2 else [(24 - a + 1, b) for a, b in move]
 
 class Naive_computer_player(Player):
     strategy = startegies.strategy_random
