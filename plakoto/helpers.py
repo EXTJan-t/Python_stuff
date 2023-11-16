@@ -32,9 +32,16 @@ def can_move(state:list,start:int, roll:int):
             return True
     elif end < 0:
         if check_can_bear_off(self_pieces):
-            if end == -1:
-                 return True
-            
-                
+            if start == min_difference_home_move(self_pieces, roll):
+                return True
     return False
 
+def min_difference_home_move(self_pieces, roll):
+        """
+        list<int> x int -> int
+
+        returns a starting point for which the current roll will waste less
+        """
+        for i in range(roll - 1, -1, -1):
+            if self_pieces[i] != 0:
+                return i

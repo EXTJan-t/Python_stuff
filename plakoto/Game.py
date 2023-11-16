@@ -2,7 +2,7 @@ import os
 from time import sleep
 import helpers
 class Game():
-    clear_board = True
+    clear_board = False
     stop_inbetween = False
     table_rotate = False
     show_interface = False
@@ -203,18 +203,15 @@ class Game():
             else:
                 #if pieces can go home
                 if self.can_go_home(self.turn):
-                    home = -1 if self.turn == 1 else 24
-                    if end == home:
+                    temp = self.min_difference_home_move(roll)
+                    if start == temp:
                         self.update_board(index, start, end, roll)
                         self.p_cnt[index] -= 1
 
                     else:
-                        if self.p_pieces[index][home + dir * roll] != 0:
-                            print("ILLEGAL MOVE", start + 1, end + 1)
-                            print("You should first move pieces that can exactly go home")
-                        else:
-                            #havent implemented second condition of going home yet
-                            pass
+                        print("ILLEGAL MOVE", start + 1, end + 1)
+                        print("You should first move pieces that can exactly go home")
+                        
                 else:
                     if self.show_interface:
                         print("ILLEGAL MOVE", start + 1, end + 1)
@@ -222,6 +219,23 @@ class Game():
         
         return
     
+
+
+    def min_difference_home_move(self, roll):
+        """
+        int -> int
+
+        returns a starting point for which the current roll will waste less
+        """
+        if self.turn == 1:
+            for i in range(roll - 1, -1, -1):
+                if self.p1_pieces[i] != 0:
+                    return i
+
+        elif self.turn == 2:
+            for i in range(24 - roll, 25):
+                if self.p2_pieces[i] != 0:
+                    return i
 
     def update_board(self, index, start, end, roll):
         """
