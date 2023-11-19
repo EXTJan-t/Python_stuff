@@ -11,7 +11,10 @@ def possible_moves(dice_roll:list, state:list):
     for pos in start_pos:
           for roll in dice_roll:
                 if can_move(state, pos, roll):
-                     moves.append((pos + 1, roll))
+                    if pos >= 6 or len(dice_roll) > 1 or check_first_go_home_action((pos, roll), self_pieces, dice_roll):
+                            moves.append((pos + 1, roll))
+                    else:
+                        moves.append((pos + 1, roll))
     #print("DEBUG:",moves)
     return moves
 
@@ -45,3 +48,30 @@ def min_difference_home_move(self_pieces, roll):
         for i in range(roll - 1, -1, -1):
             if self_pieces[i] != 0:
                 return i
+
+def check_first_go_home_action(act, self_pieces, dice_roll):
+    """
+    int -> int
+
+    we check the moves except from the last one whether they're going to prevent player from taking more efficient
+    steps of the dice_rolls
+    """
+    #print(self_pieces)
+    start, step = act
+    start += 1
+    cur_pieces = []
+    for i in range(5, -1, -1):
+        cur_pieces +=  self_pieces[i] * [i + 1]
+    if len(cur_pieces) <= 1:
+        return True
+    else:
+        min_waste = sum(dice_roll) - sum(cur_pieces[0:min(len(cur_pieces) , len(dice_roll))])
+        if min_waste <= 0:
+            return True
+        else:
+            #print(start)
+            #print(cur_pieces)
+            cur_pieces.remove(start)
+            return sum(dice_roll) - step \
+                - sum(cur_pieces[0:min(len(cur_pieces), len(dice_roll))]) <= min_waste
+    

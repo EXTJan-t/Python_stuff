@@ -167,6 +167,9 @@ class Game():
         index = self.turn - 1
         dir = -1 if self.turn == 1 else 1
         for act in act_seq:
+            if self.can_go_home(self.turn) and len(self.dice_roll) > 1:
+                if not self.check_first_go_home_action(act):
+                    return "Illegal move,",act,"you're wasting too much"
             start, roll = act
             if roll not in self.dice_roll:
                 if self.show_interface:
@@ -236,7 +239,41 @@ class Game():
             for i in range(24 - roll, 25):
                 if self.p2_pieces[i] != 0:
                     return i
+    
+    def check_first_go_home_action(self, act):
+        """
+        int -> int
 
+        we check the moves except from the last one whether they're going to prevent player from taking more efficient
+        steps of the dice_rolls
+        """
+        start, step = act
+        if self.turn == 1:
+            cur_pieces = []
+            for i in range(5, -1, -1):
+                cur_pieces +=  self.p1_pieces[i] * [i + 1]
+            
+        elif self.turn == 2:
+            cur_pieces = []
+            for i in range(18, 24):
+                cur_pieces +=  self.p2_pieces[i] * [24 - i]
+        if len(cur_pieces) <= 1:
+                return True
+        else:
+            min_waste = sum(self.dice_roll) - sum(cur_pieces[0:min(len(cur_pieces) - 1, len(self.dice_roll))])
+            if min_waste <= 0:
+                return True
+            else:
+                if self.show_DEBUG:
+                    print("DEBUG:")
+                    print(start, self.dice_roll, act)
+                    print(cur_pieces)
+                    print(sum(self.dice_roll) - step \
+                    - sum(cur_pieces[0:min(len(cur_pieces), len(self.dice_roll))]), min_waste)
+                cur_pieces.remove(start)
+                return sum(self.dice_roll) - step \
+                    - sum(cur_pieces[0:min(len(cur_pieces), len(self.dice_roll)) - 1]) <= min_waste
+        
     def update_board(self, index, start, end, roll):
         """
         int, int, int, int
