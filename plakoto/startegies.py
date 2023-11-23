@@ -1,5 +1,10 @@
+import Player
+import Game
 import helpers
 import random
+
+standard_dice = lambda : random.choice(range(1, 7))
+
 def strategy_input(dice_roll, state):
     """
     list<int> x list<list<int>> -> tuple
@@ -20,3 +25,14 @@ def strategy_random(dice_roll, state):
         print("DEBUG:",dice_roll)
         print(state)
     return random.choice(possible_moves),
+
+def monte_carlo_tree_search(dice_roll, state):
+    possible_moves = helpers.possible_moves(dice_roll, state)
+    if not possible_moves:
+        print("DEBUG:",dice_roll)
+        print(state)
+        return []
+    rates = {}
+    for move in possible_moves:
+        win_cnt = 0
+        sub_game = Game.Game(Player.Naive_computer_player("1"), Player.Naive_computer_player("1"))

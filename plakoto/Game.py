@@ -1,6 +1,7 @@
 import os
 from time import sleep
 import helpers
+import heapq
 class Game():
     clear_board = False
     stop_inbetween = False
@@ -50,11 +51,13 @@ class Game():
                 if self.show_DEBUG:
                     print("DEBUG:", self.dice_roll)
                     print(self.p1_state)
+
                 if self.show_interface:
                     print("No possible moves, passed")
+                #self.print_board()
                 #for i in range(2):#DEBUG
                 if self.stop_inbetween:
-                        input("press a key to continue")
+                    input("press a key to continue")
                 break
             self.move(self.players[0].play(self.dice_roll, self.p1_state))
 
@@ -85,26 +88,7 @@ class Game():
 
         starts the game
         """
-        if self.show_DEBUG:
-            #print("DEBUG:", self.p1_state)
-            pass
-        if self.show_interface:
-            print("game starts")
-        #two players roll to decide their order
-        d1, d2 = self.dice1(), self.dice2()
-        while d1 == d2:
-            d1, d2 = self.dice1(), self.dice2()
-        if d1  < d2:
-            self.players.reverse()
-        
-        if self.show_interface:
-            self.update_table()
-            print(self.players[0].name,"has rolled", max(d1, d2),", so he will be player1")
-            print(self.players[1].name,"has rolled", min(d1, d2),", so he will be player2")
-        self.players[0].name = "player 1: " + self.players[0].name
-        self.players[1].name = "player 2: " + self.players[1].name
-        self.players[0].turn = 1
-        self.players[0].turn = 2
+        self.decide_game_order()
         #just to simply let players see the line above
         if self.stop_inbetween:
             sleep(1.5)
@@ -169,7 +153,8 @@ class Game():
         for act in act_seq:
             if self.can_go_home(self.turn) and len(self.dice_roll) > 1:
                 if not self.check_first_go_home_action(act):
-                    return "Illegal move,",act,"you're wasting too much"
+                    print( "Illegal move,",act,"you're wasting too much")
+                    return
             start, roll = act
             if roll not in self.dice_roll:
                 if self.show_interface:
@@ -251,17 +236,29 @@ class Game():
         if self.turn == 1:
             cur_pieces = []
             for i in range(5, -1, -1):
-                cur_pieces +=  self.p1_pieces[i] * [i + 1]
+                cur_pieces +=  self.p1_pieces[i] * [i + 1] if self.point_state[i] == 0 else []
             
         elif self.turn == 2:
             cur_pieces = []
             for i in range(18, 24):
-                cur_pieces +=  self.p2_pieces[i] * [24 - i]
+                cur_pieces +=  self.p2_pieces[i] * [24 - i] if self.point_state[i] == 1 else []
         if len(cur_pieces) <= 1:
                 return True
         else:
             min_waste = sum(self.dice_roll) - sum(cur_pieces[0:min(len(cur_pieces) - 1, len(self.dice_roll))])
-            if min_waste <= 0:
+            t = [-x for x in cur_pieces[::1]]
+            dr = sorted(self.dice_roll)
+            min_waste = 0
+            for d in dr:
+                if not t:
+                    min_waste += d
+                    continue
+                p = -heapq.heappop(t)
+                rest  = p - d
+                if rest > 0:
+                    heapq.heappush(t, -rest)
+                min_waste += max(0, -rest)
+            if min_waste == 0:
                 return True
             else:
                 if self.show_DEBUG:
@@ -270,10 +267,32 @@ class Game():
                     print(cur_pieces)
                     print(sum(self.dice_roll) - step \
                     - sum(cur_pieces[0:min(len(cur_pieces), len(self.dice_roll))]), min_waste)
+                    self.print_board()
                 cur_pieces.remove(start)
-                return sum(self.dice_roll) - step \
-                    - sum(cur_pieces[0:min(len(cur_pieces), len(self.dice_roll)) - 1]) <= min_waste
-        
+                t = [-x for x in cur_pieces[::1]]
+                dr = sorted(self.dice_roll)
+                dr.remove(step)
+                waste = step - start if start < step else 0
+                if start > step:
+                    heapq.heappush(t, step - start)
+                for d in dr:
+                    if not t:
+                        min_waste += d
+                        continue
+                    p = -heapq.heappop(t)
+                    rest  = p - d
+                    if rest > 0:
+                        heapq.heappush(t, -rest)
+                    waste += max(0, -rest)
+                comp = waste <= min_waste
+                if not comp and (self.show_DEBUG or True):
+                    print("DEBUG:")
+                    print(start, self.dice_roll, act)
+                    print(cur_pieces)
+                    print(waste, min_waste,comp)
+                    print(self.point_state)
+                    self.print_board()
+                return comp
     def update_board(self, index, start, end, roll):
         """
         int, int, int, int
@@ -323,6 +342,32 @@ class Game():
         if p == 2:
             return sum(self.p2_pieces[0:18]) == 0
     
+
+    def decide_game_order(self, pre_decided = False):
+        """
+        We decide the order of the player
+        """
+        if not pre_decided:
+            if self.show_DEBUG:
+                #print("DEBUG:", self.p1_state)
+                pass
+            if self.show_interface:
+                print("game starts")
+            #two players roll to decide their order
+            d1, d2 = self.dice1(), self.dice2()
+            while d1 == d2:
+                d1, d2 = self.dice1(), self.dice2()
+            if d1  < d2:
+                self.players.reverse()
+            if self.show_interface:
+                self.update_table()
+                print(self.players[0].name,"has rolled", max(d1, d2),", so he will be player1")
+                print(self.players[1].name,"has rolled", min(d1, d2),", so he will be player2")
+            self.players[0].name = "player 1: " + self.players[0].name
+            self.players[1].name = "player 2: " + self.players[1].name
+            self.players[0].turn = 1
+            self.players[0].turn = 2
+
 
     def update_table(self):
         """

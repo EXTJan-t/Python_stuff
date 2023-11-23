@@ -40,7 +40,7 @@ elif match == 2:
     game1.game()
 
 elif match == 3:
-    test_times = 1000
+    test_times = 100000
     winners = [0, 0]
     start_time = time.time()
     for i in range(test_times):
