@@ -39,7 +39,12 @@ class Naive_computer_player(Player):
         choice =  super().play(dice_roll, state)
         return choice
     
-class Monte_Carlo_Tree_Search_player(Naive_computer_player):
+class Monte_Carlo_Tree_Search_player(Player):
     strategy = startegies.monte_carlo_tree_search
     def __init__(self, temp):
-        super().__init__(temp)
+        super().__init__(Monte_Carlo_Tree_Search_player.strategy)
+        self.name = temp
+
+    def play(self, dice_roll, state):
+        choice =  super().play(dice_roll, state)
+        return choice

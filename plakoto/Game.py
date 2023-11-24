@@ -43,7 +43,7 @@ class Game():
         self.turn = 1
         self.roll()
         while self.dice_roll and self.p_cnt[0] != 0 and self.winner() == -1:
-            if self.show_DEBUG:
+            if self.show_DEBUG and False:
                 print("DEBUG:")
                 print(helpers.possible_moves(self.dice_roll, self.p1_state))
                 print(self.point_state)
@@ -66,7 +66,7 @@ class Game():
         self.update_table()
         self.roll()
         while self.dice_roll and self.p_cnt[1] != 0 and self.winner() == -1:
-            if self.show_DEBUG:
+            if self.show_DEBUG and False:
                 print("DEBUG:")
                 print(helpers.possible_moves(self.dice_roll, self.p2_state))
                 print(self.point_state)
@@ -312,7 +312,8 @@ class Game():
 
         if self.stop_inbetween:
             input("press any key to continue")
-        self.update_table()
+        if self.show_interface:
+            self.update_table()
 
 
 
@@ -433,7 +434,47 @@ class Game():
         print()
         return
     
+class Clean_Game(Game):
+    show_interface = False
+    show_DEBUG = False
+    stop_inbetween = False
+    track_progress = False
+    def __init__(self, player1, player2, dice1, dice2):
+        super().__init__(player1, player2, dice1, dice2)
+    
+    def move(self, act_seq):
+        possible_moves = helpers.possible_moves(self.dice_roll, \
+                                                self.p1_state if self.turn == 1 else self.p2_state) 
+        index = self.turn - 1
+        for act in act_seq:
+            start, roll = act
+            start -= 1
+            end = start - roll
+            if end < 0:
+                self.p_cnt[index] -= 1
+            if (start + 1, roll) in possible_moves:
+                if self.turn == 1:
+                    self.update_board(index, start, end, roll)
+                else:
+                    self.update_board(index, 23 - start, 23 - end, roll)
+            else:
+                continue
+        if self.show_DEBUG:
+            self.print_board()
+            print(self.p1_state)
+            print(self.point_state)
+            print(self.dice_roll)
+            print(possible_moves,(start, roll))
+            input(act)
 
+    def play_a_round(self):
+        super().play_a_round()
+        if self.track_progress:
+            self.print_board()
+            print(self.p1_state)
+            print(self.dice_roll)
+    def decide_game_order(self, pre_decided=False):
+        pass
 def format_str(num):
     """
     int -> str

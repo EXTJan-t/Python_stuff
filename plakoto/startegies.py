@@ -27,12 +27,38 @@ def strategy_random(dice_roll, state):
     return random.choice(possible_moves),
 
 def monte_carlo_tree_search(dice_roll, state):
+    #input("HElloooooooooooooooooooooooooooooooooo")
+    point_state, self_pieces, others_pieces, cnt = state[0], state[1], state[2], state[3]
+    depth = 10
     possible_moves = helpers.possible_moves(dice_roll, state)
+    #input(str(len(possible_moves)))
     if not possible_moves:
         print("DEBUG:",dice_roll)
         print(state)
         return []
-    rates = {}
+    win_rate = {}
+    if self_pieces == [0] * 24 or others_pieces == [0] * 24:
+        return []
     for move in possible_moves:
-        win_cnt = 0
-        sub_game = Game.Game(Player.Naive_computer_player("1"), Player.Naive_computer_player("1"))
+        win_rate[move] = 0
+        #print(move)
+        for i in range(depth):
+            #REMINDER:[::]was very useful 😭
+            #print(i)
+            sub_game = Game.Clean_Game(Player.Naive_computer_player("1"), Player.Naive_computer_player("2"),standard_dice, standard_dice)
+            #sub_game.decide_game_order = lambda :0
+            sub_game.point_state = point_state[::1]
+            sub_game.dice_roll = dice_roll[::1]
+            sub_game.p_cnt = cnt[::1]
+            sub_game.p1_pieces, sub_game.p2_pieces = self_pieces[::1], others_pieces[::1]
+            sub_game.p_pieces = [sub_game.p1_pieces, sub_game.p2_pieces]
+            #print("org", self_pieces, others_pieces)
+            #print("aft", sub_game.p1_pieces, sub_game.p2_pieces)
+            sub_game.turn = 1
+            sub_game.move([move])
+            #print(dice_roll, sub_game.dice_roll, move)
+            sub_game.game()
+            if sub_game.winner() == 0:
+                win_rate[move] += 1
+    return [max(possible_moves, key= lambda x:win_rate[x])]
+        
