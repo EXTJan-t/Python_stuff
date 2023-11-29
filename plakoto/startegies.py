@@ -29,7 +29,7 @@ def strategy_random(dice_roll, state):
 def monte_carlo_tree_search(dice_roll, state):
     #input("HElloooooooooooooooooooooooooooooooooo")
     point_state, self_pieces, others_pieces, cnt = state[0], state[1], state[2], state[3]
-    depth = 10
+    simulation_times = 10
     possible_moves = helpers.possible_moves(dice_roll, state)
     #input(str(len(possible_moves)))
     if not possible_moves:
@@ -42,7 +42,7 @@ def monte_carlo_tree_search(dice_roll, state):
     for move in possible_moves:
         win_rate[move] = 0
         #print(move)
-        for i in range(depth):
+        for i in range(simulation_times):
             #REMINDER:[::]was very useful 😭
             #print(i)
             sub_game = Game.Clean_Game(Player.Naive_computer_player("1"), Player.Naive_computer_player("2"),standard_dice, standard_dice)

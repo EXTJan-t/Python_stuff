@@ -1,7 +1,7 @@
 import time, os
 from random import choice
 from Game import Game
-from Player import Human_player,Naive_computer_player,Monte_Carlo_Tree_Search_player
+from Player import Human_player,Naive_computer_player,Flat_MC_Player
 
 
 #player1 = Human_player(1)
@@ -76,7 +76,7 @@ elif match == 4:
             print("elpased_time", elapsed_time)
             print("currently on game",i + 1)
 
-        computer1 = Monte_Carlo_Tree_Search_player("mcts")
+        computer1 = Flat_MC_Player("flat_mc")
         computer2 = Naive_computer_player("random")
         game1 = Game(computer1, computer2, standard_dice, standard_dice)
         game1.game()
