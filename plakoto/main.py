@@ -19,7 +19,7 @@ print("what kind of game1 would you like?")
 print("1.human player against human player")
 print("2.Human player against computer")
 print("3.Random computer against Random computer")
-print("4.Monte Carlo tree search computer against random computer")
+print("4.Flat Monte Carlo tree search computer against random computer")
 match = int(input())
 while match not in (1,2,3,4):
     match = int(input("Invalid choice"))

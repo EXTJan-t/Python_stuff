@@ -440,6 +440,7 @@ class Clean_Game(Game):
     stop_inbetween = False
     track_progress = False
     def __init__(self, player1, player2, dice1, dice2):
+        self.predecide_move = 1
         super().__init__(player1, player2, dice1, dice2)
     
     def move(self, act_seq):
@@ -475,6 +476,12 @@ class Clean_Game(Game):
             print(self.dice_roll)
     def decide_game_order(self, pre_decided=False):
         pass
+    def roll(self):
+        if self.predecide_move == 1:
+            self.predecide_move -= 1
+            pass
+        else:
+            return super().roll()
 def format_str(num):
     """
     int -> str
