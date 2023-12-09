@@ -1,6 +1,6 @@
 import time, os
 from random import choice
-from Game import Game
+from Game import Game,Clean_Game
 from Player import Human_player,Naive_computer_player,Flat_MC_Player
 
 
@@ -65,7 +65,7 @@ elif match == 3:
     print(game1.players[0].name, "won", winners[0],"times", "winrate:", winners[0]/test_times)
     print(game1.players[1].name, "won", winners[1],"times", "winrate:",winners[1]/test_times)
 elif match == 4:
-    test_times = 100
+    test_times = 200
     winners = [0, 0]
     start_time = time.time()
     for i in range(test_times):
@@ -78,7 +78,7 @@ elif match == 4:
 
         computer1 = Flat_MC_Player("flat_mc")
         computer2 = Naive_computer_player("random")
-        game1 = Game(computer1, computer2, standard_dice, standard_dice)
+        game1 = Clean_Game(computer1, computer2, standard_dice, standard_dice)
         game1.game()
 
         winners[game1.winner()] += 1

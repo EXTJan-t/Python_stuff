@@ -9,8 +9,8 @@ def possible_moves(dice_roll:list, state:list):
     start_pos = [x for x in range(24) if point_state[x] == 0]
     #print("DEBUG:", start_pos)
     moves = []
-    for pos in start_pos:
-          for roll in dice_roll:
+    for pos in set(start_pos):
+          for roll in set(dice_roll):
                 if can_move(state, pos, roll):
                     if not check_can_bear_off(self_pieces) or len(dice_roll) <= 1 or check_first_go_home_action((pos, roll), self_pieces, point_state, dice_roll):
                         moves.append((pos + 1, roll))

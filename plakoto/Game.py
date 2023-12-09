@@ -95,8 +95,9 @@ class Game():
         while self.winner() == -1:
             self.play_a_round()
             self.round += 1
-        self.update_table()
+            
         if self.show_interface:
+            self.update_table()
             print(self.winner())
             print("game ended, winner is", self.players[self.winner()].name)
 
@@ -474,12 +475,11 @@ class Clean_Game(Game):
             self.print_board()
             print(self.p1_state)
             print(self.dice_roll)
-    def decide_game_order(self, pre_decided=False):
-        pass
+
     def roll(self):
         if self.predecide_move == 1:
             self.predecide_move -= 1
-            pass
+            return
         else:
             return super().roll()
 def format_str(num):

@@ -36,31 +36,43 @@ def monte_carlo_tree_search(dice_roll, state):
         print("DEBUG:",dice_roll)
         print(state)
         return []
+    if len(possible_moves) == 1:
+        return possible_moves
     win_rate = {}
     if self_pieces == [0] * 24 or others_pieces == [0] * 24:
         return []
+    min_lost = simulation_times + 1
+    saved_rounds = 0
+    #print(possible_moves)
     for move in possible_moves:
         win_rate[move] = 0
         
-        #print(move)
         #REMINDER:[::]was very useful 😭
-        #print(i)
         sub_game = Game.Clean_Game(Player.Naive_computer_player("1"), Player.Naive_computer_player("2"),standard_dice, standard_dice)
-        #sub_game.decide_game_order = lambda :0
+        sub_game.predecide_move = 1
         sub_game.point_state = point_state[::1]
         sub_game.dice_roll = dice_roll[::1]
         sub_game.p_cnt = cnt[::1]
         sub_game.p1_pieces, sub_game.p2_pieces = self_pieces[::1], others_pieces[::1]
         sub_game.p_pieces = [sub_game.p1_pieces, sub_game.p2_pieces]
-        #print("org", self_pieces, others_pieces)
-        #print("aft", sub_game.p1_pieces, sub_game.p2_pieces)
         sub_game.move([move])
-        #print(dice_roll, sub_game.dice_roll, move)
 
         for i in range(simulation_times):
             t = deepcopy(sub_game)
             t.game()
             if t.winner() == 0:
                 win_rate[move] += 1
-    return [max(possible_moves, key= lambda x:win_rate[x])]
+
+            #we can break from the loop early if it is not possible for the current move to win further.
+            elif i + 1 - win_rate[move] > min_lost:
+                #saved_rounds += simulation_times - i - 1
+                break
+
+        min_lost= min(min_lost, simulation_times - win_rate[move])
+    #print("saved", saved_rounds, "/", simulation_times * len(possible_moves))
+    max_win = simulation_times - min_lost
+    res = [x for x in possible_moves if win_rate[x] == max_win]
+    #print(win_rate, max_win)
+    #print(res)
+    return [random.choice(res)] if res else []
         
